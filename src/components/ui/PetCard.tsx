@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import { Heart, X, ChevronUp, MapPin, Mars, Venus } from 'lucide-react';
+import { Heart, X, ChevronUp, MapPin, User } from 'lucide-react';
 import ProfileImage from './ProfileImage';
 
 interface PetCardProps {
@@ -165,14 +164,12 @@ const PetCard = ({
       onMouseLeave={handleMouseUp}
     >
       <div className="relative h-[calc(100%-100px)]">
-        {/* Current Image */}
         <img 
           src={images[currentImageIndex]} 
           alt={`${name}'s photo ${currentImageIndex + 1}`}
           className="w-full h-full object-cover"
         />
         
-        {/* Image Pagination */}
         <div className="absolute top-2 left-2 right-2 flex justify-center gap-1 z-10">
           {images.map((_, index) => (
             <div 
@@ -186,7 +183,6 @@ const PetCard = ({
           ))}
         </div>
         
-        {/* Profile Info */}
         <div className="absolute top-4 left-4 flex items-center">
           <ProfileImage 
             src={images[0]} 
@@ -197,7 +193,6 @@ const PetCard = ({
           />
         </div>
         
-        {/* Detail Instruction */}
         <div className="absolute bottom-4 left-0 right-0 flex flex-col items-center animate-pulse-subtle">
           <ChevronUp className="w-6 h-6 text-white drop-shadow-md" />
           <span className="text-xs text-white font-medium drop-shadow-md">Swipe up for details</span>
@@ -209,11 +204,9 @@ const PetCard = ({
           <div>
             <h2 className="text-xl font-semibold">{name}</h2>
             <div className="flex items-center text-sm text-gray-600">
-              {gender === 'male' ? (
-                <Mars className="w-4 h-4 text-blue-500 mr-1" />
-              ) : (
-                <Venus className="w-4 h-4 text-pink-500 mr-1" />
-              )}
+              <User 
+                className={`w-4 h-4 ${gender === 'male' ? 'text-blue-500' : 'text-pink-500'} mr-1`} 
+              />
               <span className="mr-3">{breed}</span>
               <MapPin className="w-4 h-4 mr-1" />
               <span>{distance} km</span>

@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Camera, Settings, Edit, MapPin, Mars, Venus, Shield, LogOut } from 'lucide-react';
+import { Camera, Settings, Edit, MapPin, User, Shield, LogOut } from 'lucide-react';
 
 const Profile = () => {
   // Sample profile data
@@ -65,11 +64,9 @@ const Profile = () => {
             
             <div className="text-center p-3 bg-gray-50 rounded-lg">
               <h3 className="font-semibold flex justify-center">
-                {profile.petGender === 'male' ? (
-                  <Mars className="w-5 h-5 text-blue-500" />
-                ) : (
-                  <Venus className="w-5 h-5 text-pink-500" />
-                )}
+                <User 
+                  className={`w-5 h-5 ${profile.petGender === 'male' ? 'text-blue-500' : 'text-pink-500'}`} 
+                />
               </h3>
               <p className="text-xs text-gray-500">Gender</p>
             </div>
