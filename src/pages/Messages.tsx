@@ -10,7 +10,7 @@ const sampleConversations = [
     petName: 'Bella',
     ownerName: 'Sarah',
     image: 'https://images.unsplash.com/photo-1583511655826-05700442982d',
-    lastMessage: 'Let's meet at the park this weekend!',
+    lastMessage: "Let's meet at the park this weekend!",
     time: '10:32 AM',
     unread: 2,
   },

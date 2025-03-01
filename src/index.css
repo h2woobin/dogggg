@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -77,8 +76,9 @@
   }
   
   .scrollable {
-    @apply overflow-y-auto overscroll-behavior-contain scroll-smooth;
+    @apply overflow-y-auto scroll-smooth;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   
   .scrollable::-webkit-scrollbar {

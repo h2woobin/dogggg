@@ -8,7 +8,7 @@ const samplePosts = [
   {
     id: '1',
     title: 'How do I stop my dog from barking at strangers?',
-    content: 'My 2-year-old Beagle barks excessively whenever someone new comes to our house. We've tried treats and distraction but nothing seems to work. Any advice from experienced owners?',
+    content: "My 2-year-old Beagle barks excessively whenever someone new comes to our house. We've tried treats and distraction but nothing seems to work. Any advice from experienced owners?",
     tags: ['training', 'behavior', 'barking'],
     petType: 'Beagle',
     likesCount: 24,
@@ -20,7 +20,7 @@ const samplePosts = [
   {
     id: '2',
     title: 'Best food for a German Shepherd with sensitive stomach?',
-    content: 'My German Shepherd has developed some digestive issues and I'm looking for food recommendations. He's 4 years old and quite active.',
+    content: "My German Shepherd has developed some digestive issues and I'm looking for food recommendations. He's 4 years old and quite active.",
     tags: ['nutrition', 'health', 'germanshepherd'],
     petType: 'German Shepherd',
     likesCount: 18,
@@ -32,7 +32,7 @@ const samplePosts = [
   {
     id: '3',
     title: 'Introducing a new puppy to my older dog',
-    content: 'I'm getting a new Labrador puppy next week and I already have a 7-year-old Retriever at home. Any tips on how to make the introduction go smoothly and avoid jealousy?',
+    content: "I'm getting a new Labrador puppy next week and I already have a 7-year-old Retriever at home. Any tips on how to make the introduction go smoothly and avoid jealousy?",
     tags: ['puppies', 'multipledog', 'training'],
     petType: 'Labrador',
     likesCount: 32,
