@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import { Heart, X, ChevronUp, MapPin, Male, Female } from 'lucide-react';
+import { Heart, X, ChevronUp, MapPin, Mars, Venus } from 'lucide-react';
 import ProfileImage from './ProfileImage';
 
 interface PetCardProps {
@@ -210,9 +210,9 @@ const PetCard = ({
             <h2 className="text-xl font-semibold">{name}</h2>
             <div className="flex items-center text-sm text-gray-600">
               {gender === 'male' ? (
-                <Male className="w-4 h-4 text-blue-500 mr-1" />
+                <Mars className="w-4 h-4 text-blue-500 mr-1" />
               ) : (
-                <Female className="w-4 h-4 text-pink-500 mr-1" />
+                <Venus className="w-4 h-4 text-pink-500 mr-1" />
               )}
               <span className="mr-3">{breed}</span>
               <MapPin className="w-4 h-4 mr-1" />
