@@ -12,6 +12,7 @@ import Experts from "./pages/Experts";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Chat from './pages/Chat';
+import TestDB from './pages/TestDB';
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="profile" element={<Profile />} />
           </Route>
           <Route path="/chat/:petId" element={<Chat />} />
+          <Route path="/test-db" element={<TestDB />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
