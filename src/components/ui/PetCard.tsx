@@ -170,6 +170,24 @@ const PetCard = ({
           className="w-full h-full object-cover"
         />
         
+        <div className="absolute bottom-20 left-0 right-0">
+          <div className="flex justify-around px-4">
+            <button 
+              className="btn-circle w-14 h-14 bg-white border-2 border-red-500 text-red-500 hover:bg-red-50 shadow-lg"
+              onClick={handleDislike}
+            >
+              <X className="w-8 h-8" />
+            </button>
+            
+            <button 
+              className="btn-circle w-14 h-14 bg-white border-2 border-green-500 text-green-500 hover:bg-green-50 shadow-lg"
+              onClick={handleLike}
+            >
+              <Heart className="w-8 h-8" />
+            </button>
+          </div>
+        </div>
+
         <div className="absolute top-2 left-2 right-2 flex justify-center gap-1 z-10">
           {images.map((_, index) => (
             <div 
@@ -200,7 +218,7 @@ const PetCard = ({
       </div>
       
       <div className="p-4 bg-white">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold">{name}</h2>
             <div className="flex items-center text-sm text-gray-600">
@@ -212,22 +230,6 @@ const PetCard = ({
               <span>{distance} km</span>
             </div>
           </div>
-        </div>
-        
-        <div className="flex justify-around pt-2">
-          <button 
-            className="btn-circle w-14 h-14 bg-white border-2 border-red-500 text-red-500 hover:bg-red-50"
-            onClick={handleDislike}
-          >
-            <X className="w-8 h-8" />
-          </button>
-          
-          <button 
-            className="btn-circle w-14 h-14 bg-white border-2 border-green-500 text-green-500 hover:bg-green-50"
-            onClick={handleLike}
-          >
-            <Heart className="w-8 h-8" />
-          </button>
         </div>
       </div>
     </animated.div>

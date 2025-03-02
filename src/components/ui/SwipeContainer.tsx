@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import PetCard from './PetCard';
 
@@ -20,9 +19,10 @@ interface Pet {
 interface SwipeContainerProps {
   pets: Pet[];
   onDetailView: (id: string) => void;
+  onPetViewed: (id: string) => void;
 }
 
-const SwipeContainer = ({ pets, onDetailView }: SwipeContainerProps) => {
+const SwipeContainer = ({ pets, onDetailView, onPetViewed }: SwipeContainerProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [likedPets, setLikedPets] = useState<string[]>([]);
   const [dislikedPets, setDislikedPets] = useState<string[]>([]);
@@ -35,6 +35,7 @@ const SwipeContainer = ({ pets, onDetailView }: SwipeContainerProps) => {
     setExitingCardId(id);
     setExitDirection('right');
     setLikedPets([...likedPets, id]);
+    onPetViewed(id);
     
     setTimeout(() => {
       setCurrentIndex((prev) => Math.min(prev + 1, pets.length - 1));
@@ -47,6 +48,7 @@ const SwipeContainer = ({ pets, onDetailView }: SwipeContainerProps) => {
     setExitingCardId(id);
     setExitDirection('left');
     setDislikedPets([...dislikedPets, id]);
+    onPetViewed(id);
     
     setTimeout(() => {
       setCurrentIndex((prev) => Math.min(prev + 1, pets.length - 1));
@@ -58,8 +60,8 @@ const SwipeContainer = ({ pets, onDetailView }: SwipeContainerProps) => {
   if (pets.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-6 text-center">
-        <div className="mb-4 text-6xl">🐶</div>
-        <h3 className="text-xl font-semibold mb-2">No more pets to show</h3>
+        <div className="mb-4 text-6xl">🐾</div>
+        <h3 className="text-xl font-semibold mb-2">You've seen all dogs!</h3>
         <p className="text-muted-foreground">
           Check back later for new furry friends in your area!
         </p>

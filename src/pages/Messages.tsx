@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Search } from 'lucide-react';
 import ProfileImage from '../components/ui/ProfileImage';
+import { useNavigate } from 'react-router-dom';
 
 // Sample data
 const sampleConversations = [
@@ -9,7 +9,7 @@ const sampleConversations = [
     id: '1',
     petName: 'Bella',
     ownerName: 'Sarah',
-    image: 'https://images.unsplash.com/photo-1583511655826-05700442982d',
+    image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80',
     lastMessage: "Let's meet at the park this weekend!",
     time: '10:32 AM',
     unread: 2,
@@ -18,7 +18,7 @@ const sampleConversations = [
     id: '2',
     petName: 'Max',
     ownerName: 'Mike',
-    image: 'https://images.unsplash.com/photo-1560743641-3914f2c45636',
+    image: 'https://images.unsplash.com/photo-1560743641-3914f2c45636?auto=format&fit=crop&w=800&q=80',
     lastMessage: 'My dog really enjoyed playing with yours! We should do it again.',
     time: 'Yesterday',
     unread: 0,
@@ -27,7 +27,7 @@ const sampleConversations = [
     id: '3',
     petName: 'Luna',
     ownerName: 'Emma',
-    image: 'https://images.unsplash.com/photo-1511382686815-a9a670f0a512',
+    image: 'https://images.unsplash.com/photo-1511382686815-a9a670f0a512?auto=format&fit=crop&w=800&q=80',
     lastMessage: 'Thanks for the recommendation on the vet!',
     time: 'Wed',
     unread: 0,
@@ -35,6 +35,8 @@ const sampleConversations = [
 ];
 
 const Messages = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="page-container">
       <header className="sticky top-0 z-10 bg-white border-b border-gray-200 p-4">
@@ -66,6 +68,7 @@ const Messages = () => {
               <div
                 key={conversation.id}
                 className="flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => navigate(`/chat/${conversation.id}`)}
               >
                 <div className="relative">
                   <ProfileImage

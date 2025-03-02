@@ -1,9 +1,22 @@
 import React, { useState } from 'react';
 import { Camera, Settings, Edit, MapPin, User, Shield, LogOut } from 'lucide-react';
 
-const Profile = () => {
+interface ProfileData {
+  petName: string;
+  petImage: string;
+  petAge: number;
+  petGender: 'male' | 'female';
+  petBreed: string;
+  ownerName: string;
+  ownerImage: string;
+  location: string;
+  bio: string;
+  interests: string[];
+}
+
+const Profile: FC = () => {
   // Sample profile data
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<ProfileData>({
     petName: 'Charlie',
     petImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
     petAge: 3,
