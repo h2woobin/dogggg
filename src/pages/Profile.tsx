@@ -1,33 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Camera, Settings, Edit, MapPin, User, Shield, LogOut } from 'lucide-react';
+import { useProfile } from '../contexts/ProfileContext';
 
-interface ProfileData {
-  petName: string;
-  petImage: string;
-  petAge: number;
-  petGender: 'male' | 'female';
-  petBreed: string;
-  ownerName: string;
-  ownerImage: string;
-  location: string;
-  bio: string;
-  interests: string[];
-}
+const Profile = () => {
+  const navigate = useNavigate();
+  const { profile } = useProfile();
 
-const Profile: FC = () => {
-  // Sample profile data
-  const [profile, setProfile] = useState<ProfileData>({
-    petName: 'Charlie',
-    petImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1',
-    petAge: 3,
-    petGender: 'male',
-    petBreed: 'Beagle',
-    ownerName: 'Alex Johnson',
-    ownerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e',
-    location: 'San Francisco, CA',
-    bio: 'Charlie loves playing fetch at the park and meeting new furry friends! He\'s very friendly and gets along with dogs of all sizes.',
-    interests: ['Running', 'Fetch', 'Swimming', 'Toys'],
-  });
+  const handleEditClick = () => {
+    navigate('/edit-profile');
+  };
 
   return (
     <div className="page-container">
@@ -55,7 +37,10 @@ const Profile: FC = () => {
           </div>
           
           <div className="absolute -bottom-16 right-4">
-            <button className="bg-white rounded-full p-2 shadow-sm text-gray-700 hover:bg-gray-50">
+            <button 
+              onClick={handleEditClick}
+              className="bg-white rounded-full p-2 shadow-sm text-gray-700 hover:bg-gray-50"
+            >
               <Edit className="w-5 h-5" />
             </button>
           </div>

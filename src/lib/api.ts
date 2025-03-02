@@ -78,7 +78,10 @@ export const createMatch = async (matchData: Omit<Match, 'id' | 'created_at'>) =
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    console.error('Create match error:', error);
+    throw new Error(`Failed to create match: ${error.message}`);
+  }
   return data;
 };
 
@@ -89,32 +92,44 @@ export const getMatches = async (userId: string) => {
     .eq('user_id', userId)
     .eq('liked', true);
   
-  if (error) throw error;
+  if (error) {
+    console.error('Get matches error:', error);
+    throw new Error(`Failed to get matches: ${error.message}`);
+  }
   return data;
 };
 
 // Message API
 export const sendMessage = async (messageData: Omit<Message, 'id' | 'created_at' | 'read'>) => {
+  console.log('Sending message data:', messageData);
   const { data, error } = await supabase
     .from('messages')
     .insert([{ ...messageData, read: false }])
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    console.error('Send message error:', error);
+    throw new Error(`Failed to send message: ${error.message}`);
+  }
   return data;
 };
 
 export const getMessages = async (userId: string, otherId: string) => {
+  console.log('Getting messages for:', { userId, otherId });
   const { data, error } = await supabase
     .from('messages')
     .select('*')
-    .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-    .or(`sender_id.eq.${otherId},receiver_id.eq.${otherId}`)
+    .or(`and(sender_id.eq.${userId},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${userId})`)
     .order('created_at', { ascending: true });
   
-  if (error) throw error;
-  return data;
+  if (error) {
+    console.error('Get messages error:', error);
+    throw new Error(`Failed to get messages: ${error.message}`);
+  }
+  
+  console.log('Retrieved messages:', data);
+  return data || [];
 };
 
 export const markMessageAsRead = async (messageId: string) => {
@@ -125,6 +140,9 @@ export const markMessageAsRead = async (messageId: string) => {
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    console.error('Mark message as read error:', error);
+    throw new Error(`Failed to mark message as read: ${error.message}`);
+  }
   return data;
 }; 

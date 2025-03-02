@@ -1,64 +1,65 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { sendMessage, getMessages } from '../lib/api';
 
 interface Message {
   id: string;
-  senderId: string;
+  sender_id: string;
+  receiver_id: string;
   text: string;
-  timestamp: Date;
+  created_at: string;
 }
 
 // 샘플 데이터
 const pets = {
   '1': {
+    id: '1',
     name: 'Bella',
     breed: 'Golden Retriever',
     image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80'
   },
   '2': {
+    id: '2',
     name: 'Max',
     breed: 'Labrador',
     image: 'https://images.unsplash.com/photo-1560743641-3914f2c45636?auto=format&fit=crop&w=800&q=80'
   },
   '3': {
+    id: '3',
     name: 'Luna',
     breed: 'Husky',
     image: 'https://images.unsplash.com/photo-1511382686815-a9a670f0a512?auto=format&fit=crop&w=800&q=80'
   }
 };
 
-const initialMessages = {
-  '1': [
-    {
-      id: '1',
-      senderId: 'pet',
-      text: '안녕하세요! 저와 함께 산책하고 싶으신가요?',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    }
-  ],
-  '2': [
-    {
-      id: '1',
-      senderId: 'pet',
-      text: '공놀이 좋아하시나요? 저는 공 던지기를 정말 좋아해요!',
-      timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000),
-    }
-  ],
-  '3': [
-    {
-      id: '1',
-      senderId: 'pet',
-      text: '안녕하세요! 저는 활발한 성격이에요. 함께 뛰어놀아요!',
-      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-    }
-  ]
+// userId를 가져오거나 생성하는 함수
+const getUserId = () => {
+  const storedUserId = localStorage.getItem('chatUserId');
+  if (storedUserId) {
+    return storedUserId;
+  }
+  const newUserId = 'user-' + Date.now();
+  localStorage.setItem('chatUserId', newUserId);
+  return newUserId;
 };
 
 const Chat = () => {
   const navigate = useNavigate();
   const { petId } = useParams();
-  
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [userId] = useState(getUserId());
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const pet = useMemo(() => {
     if (!petId || !pets[petId as keyof typeof pets]) {
       navigate('/messages');
@@ -67,33 +68,75 @@ const Chat = () => {
     return pets[petId as keyof typeof pets];
   }, [petId, navigate]);
 
-  const [messages, setMessages] = useState<Message[]>(
-    initialMessages[petId as keyof typeof initialMessages] || []
-  );
-  
-  const [newMessage, setNewMessage] = useState('');
+  // 메시지 목록 가져오기
+  const fetchMessages = async () => {
+    if (!pet?.id || !userId) return;
+
+    try {
+      console.log('Fetching messages for:', { userId, petId: pet.id });
+      const fetchedMessages = await getMessages(userId, pet.id);
+      console.log('Fetched messages:', fetchedMessages);
+      setMessages(fetchedMessages || []);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시와 주기적으로 메시지 업데이트
+  useEffect(() => {
+    if (!pet?.id || !userId) return;
+
+    console.log('Setting up message polling with:', { userId, petId: pet.id });
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 3000);
+
+    return () => clearInterval(interval);
+  }, [petId, userId, pet?.id]);
 
   if (!pet) return null;
 
-  const handleSend = () => {
-    if (!newMessage.trim()) return;
+  const handleSend = async () => {
+    if (!newMessage.trim() || !pet?.id || !userId) return;
 
-    const message: Message = {
-      id: Date.now().toString(),
-      senderId: 'user',
-      text: newMessage,
-      timestamp: new Date(),
-    };
+    try {
+      console.log('Sending message:', {
+        sender_id: userId,
+        receiver_id: pet.id,
+        text: newMessage
+      });
 
-    setMessages([...messages, message]);
-    setNewMessage('');
+      // 먼저 UI 업데이트
+      const optimisticMessage = {
+        id: Date.now().toString(),
+        sender_id: userId,
+        receiver_id: pet.id,
+        text: newMessage,
+        created_at: new Date().toISOString()
+      };
+      setMessages(prev => [...prev, optimisticMessage]);
+      setNewMessage('');
+
+      // 실제 메시지 전송
+      await sendMessage({
+        sender_id: userId,
+        receiver_id: pet.id,
+        text: newMessage
+      });
+
+      // 전체 메시지 목록 업데이트
+      fetchMessages();
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // 에러 발생 시 optimistic 업데이트 롤백
+      setMessages(prev => prev.filter(msg => msg.id !== Date.now().toString()));
+    }
   };
 
-  const formatTime = (date: Date) => {
+  const formatTime = (date: string | Date) => {
     return new Intl.DateTimeFormat('ko-KR', {
       hour: 'numeric',
       minute: 'numeric',
-    }).format(date);
+    }).format(new Date(date));
   };
 
   return (
@@ -124,28 +167,29 @@ const Chat = () => {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.senderId === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.sender_id === userId ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`max-w-[70%] rounded-2xl px-4 py-2 ${
-                message.senderId === 'user'
+                message.sender_id === userId
                   ? 'bg-blue-500 text-white'
                   : 'bg-white border border-gray-200'
               }`}
             >
               <p>{message.text}</p>
               <p className={`text-xs mt-1 ${
-                message.senderId === 'user' ? 'text-blue-100' : 'text-gray-500'
+                message.sender_id === userId ? 'text-blue-100' : 'text-gray-500'
               }`}>
-                {formatTime(message.timestamp)}
+                {formatTime(message.created_at)}
               </p>
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Message Input */}
-      <div className="border-t border-gray-200 bg-white p-4">
+      <div className="border-t border-gray-200 p-4 bg-white">
         <div className="flex items-center space-x-2">
           <input
             type="text"

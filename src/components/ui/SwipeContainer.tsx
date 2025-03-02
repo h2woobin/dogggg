@@ -35,10 +35,14 @@ const SwipeContainer = ({ pets, onDetailView, onPetViewed }: SwipeContainerProps
     setExitingCardId(id);
     setExitDirection('right');
     setLikedPets([...likedPets, id]);
-    onPetViewed(id);
     
     setTimeout(() => {
-      setCurrentIndex((prev) => Math.min(prev + 1, pets.length - 1));
+      if (currentIndex === pets.length - 1) {
+        onPetViewed(id);
+      } else {
+        onPetViewed(id);
+        setCurrentIndex(prev => prev + 1);
+      }
       setExitingCardId(null);
       setExitDirection(null);
     }, 500);
@@ -48,10 +52,14 @@ const SwipeContainer = ({ pets, onDetailView, onPetViewed }: SwipeContainerProps
     setExitingCardId(id);
     setExitDirection('left');
     setDislikedPets([...dislikedPets, id]);
-    onPetViewed(id);
     
     setTimeout(() => {
-      setCurrentIndex((prev) => Math.min(prev + 1, pets.length - 1));
+      if (currentIndex === pets.length - 1) {
+        onPetViewed(id);
+      } else {
+        onPetViewed(id);
+        setCurrentIndex(prev => prev + 1);
+      }
       setExitingCardId(null);
       setExitDirection(null);
     }, 500);
@@ -69,7 +77,7 @@ const SwipeContainer = ({ pets, onDetailView, onPetViewed }: SwipeContainerProps
     );
   }
 
-  if (currentIndex >= pets.length) {
+  if (currentIndex > pets.length - 1) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-6 text-center">
         <div className="mb-4 text-6xl">👋</div>

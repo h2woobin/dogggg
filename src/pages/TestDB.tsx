@@ -5,10 +5,15 @@ export default function TestDB() {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string>('');
 
+  const generateRandomEmail = () => {
+    const timestamp = Date.now();
+    return `test${timestamp}@example.com`;
+  };
+
   const testCreateUser = async () => {
     try {
       const user = await createUser({
-        email: 'test@example.com',
+        email: generateRandomEmail(),
         name: 'Test User',
         profile_image: 'https://example.com/profile.jpg'
       });
@@ -23,7 +28,7 @@ export default function TestDB() {
     try {
       // First, we need to create a user
       const user = await createUser({
-        email: 'petowner@example.com',
+        email: generateRandomEmail(),
         name: 'Pet Owner',
         profile_image: 'https://example.com/owner.jpg'
       });
@@ -57,13 +62,13 @@ export default function TestDB() {
     try {
       // Create two users for testing
       const user1 = await createUser({
-        email: 'sender@example.com',
+        email: generateRandomEmail(),
         name: 'Sender',
         profile_image: 'https://example.com/sender.jpg'
       });
 
       const user2 = await createUser({
-        email: 'receiver@example.com',
+        email: generateRandomEmail(),
         name: 'Receiver',
         profile_image: 'https://example.com/receiver.jpg'
       });

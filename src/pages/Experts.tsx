@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, Filter, Award, Clock, DollarSign, MessageSquare, X } from 'lucide-react';
 import SpecialistCard from '../components/ui/SpecialistCard';
@@ -43,9 +42,24 @@ const sampleSpecialists = [
   },
 ];
 
+interface FilterState {
+  profession: string;
+  experience: string;
+  priceRange: string;
+  consultations: string;
+}
+
 const Experts = () => {
   const [expandedSpecialist, setExpandedSpecialist] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState<FilterState>({
+    profession: '',
+    experience: '',
+    priceRange: '',
+    consultations: '',
+  });
+  const [filteredSpecialists, setFilteredSpecialists] = useState(sampleSpecialists);
   
   const handleSpecialistClick = (id: string) => {
     setExpandedSpecialist(expandedSpecialist === id ? null : id);
@@ -58,6 +72,103 @@ const Experts = () => {
   
   const toggleFilters = () => {
     setShowFilters(!showFilters);
+  };
+
+  const handleFilterChange = (field: keyof FilterState, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const applyFilters = () => {
+    let filtered = [...sampleSpecialists];
+
+    // 검색어 필터링
+    if (searchTerm) {
+      filtered = filtered.filter(specialist => 
+        specialist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        specialist.occupation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        specialist.bio.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // 직업 필터링
+    if (filters.profession) {
+      filtered = filtered.filter(specialist => {
+        const professionMap: { [key: string]: string } = {
+          'vet': 'Veterinarian',
+          'trainer': 'Dog Trainer',
+          'groomer': 'Dog Groomer'
+        };
+        return specialist.occupation === professionMap[filters.profession];
+      });
+    }
+
+    // 경력 필터링
+    if (filters.experience) {
+      filtered = filtered.filter(specialist => {
+        const years = specialist.experience;
+        switch (filters.experience) {
+          case '0-5':
+            return years <= 5;
+          case '6-10':
+            return years > 5 && years <= 10;
+          case '10+':
+            return years > 10;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // 가격 필터링
+    if (filters.priceRange) {
+      filtered = filtered.filter(specialist => {
+        const price = specialist.pricePerHour;
+        switch (filters.priceRange) {
+          case '0-50':
+            return price <= 50;
+          case '51-100':
+            return price > 50 && price <= 100;
+          case '100+':
+            return price > 100;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // 상담 횟수 필터링
+    if (filters.consultations) {
+      filtered = filtered.filter(specialist => {
+        const count = specialist.consultationCount;
+        switch (filters.consultations) {
+          case '0-100':
+            return count <= 100;
+          case '101-500':
+            return count > 100 && count <= 500;
+          case '500+':
+            return count > 500;
+          default:
+            return true;
+        }
+      });
+    }
+
+    setFilteredSpecialists(filtered);
+    setShowFilters(false);
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      profession: '',
+      experience: '',
+      priceRange: '',
+      consultations: '',
+    });
+    setSearchTerm('');
+    setFilteredSpecialists(sampleSpecialists);
   };
 
   return (
@@ -81,6 +192,8 @@ const Experts = () => {
             type="text"
             className="bg-gray-100 border-none text-gray-900 text-sm rounded-xl block w-full pl-10 p-2.5 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Search specialists..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
@@ -101,7 +214,11 @@ const Experts = () => {
                 <Award className="w-4 h-4 text-gray-700" />
                 <span className="text-sm">Profession</span>
               </div>
-              <select className="bg-white text-sm p-2 rounded border border-gray-200">
+              <select 
+                className="bg-white text-sm p-2 rounded border border-gray-200"
+                value={filters.profession}
+                onChange={(e) => handleFilterChange('profession', e.target.value)}
+              >
                 <option value="">Any</option>
                 <option value="vet">Veterinarian</option>
                 <option value="trainer">Dog Trainer</option>
@@ -112,7 +229,11 @@ const Experts = () => {
                 <Clock className="w-4 h-4 text-gray-700" />
                 <span className="text-sm">Experience</span>
               </div>
-              <select className="bg-white text-sm p-2 rounded border border-gray-200">
+              <select 
+                className="bg-white text-sm p-2 rounded border border-gray-200"
+                value={filters.experience}
+                onChange={(e) => handleFilterChange('experience', e.target.value)}
+              >
                 <option value="">Any</option>
                 <option value="0-5">0-5 years</option>
                 <option value="6-10">6-10 years</option>
@@ -123,7 +244,11 @@ const Experts = () => {
                 <DollarSign className="w-4 h-4 text-gray-700" />
                 <span className="text-sm">Price Range</span>
               </div>
-              <select className="bg-white text-sm p-2 rounded border border-gray-200">
+              <select 
+                className="bg-white text-sm p-2 rounded border border-gray-200"
+                value={filters.priceRange}
+                onChange={(e) => handleFilterChange('priceRange', e.target.value)}
+              >
                 <option value="">Any</option>
                 <option value="0-50">$0-$50</option>
                 <option value="51-100">$51-$100</option>
@@ -134,7 +259,11 @@ const Experts = () => {
                 <MessageSquare className="w-4 h-4 text-gray-700" />
                 <span className="text-sm">Consultations</span>
               </div>
-              <select className="bg-white text-sm p-2 rounded border border-gray-200">
+              <select 
+                className="bg-white text-sm p-2 rounded border border-gray-200"
+                value={filters.consultations}
+                onChange={(e) => handleFilterChange('consultations', e.target.value)}
+              >
                 <option value="">Any</option>
                 <option value="0-100">0-100</option>
                 <option value="101-500">101-500</option>
@@ -142,15 +271,26 @@ const Experts = () => {
               </select>
             </div>
             
-            <button className="w-full py-2 btn-primary rounded-lg text-sm font-medium">
-              Apply Filters
-            </button>
+            <div className="flex gap-2">
+              <button 
+                className="flex-1 py-2 btn-primary rounded-lg text-sm font-medium"
+                onClick={applyFilters}
+              >
+                Apply Filters
+              </button>
+              <button 
+                className="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors"
+                onClick={resetFilters}
+              >
+                Reset
+              </button>
+            </div>
           </div>
         )}
       </header>
       
       <div className="scrollable flex-1 p-4">
-        {sampleSpecialists.map(specialist => (
+        {filteredSpecialists.map(specialist => (
           <SpecialistCard
             key={specialist.id}
             {...specialist}

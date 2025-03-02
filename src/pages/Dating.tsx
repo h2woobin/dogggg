@@ -1,61 +1,130 @@
 import React, { useState, useMemo } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import { ChevronDown, Filter } from 'lucide-react';
+import { ChevronDown, Filter, MapPin } from 'lucide-react';
 import SwipeContainer from '../components/ui/SwipeContainer';
 
-// Sample data
+// Sample pet data with distance
 const samplePets = [
   {
     id: '1',
     name: 'Bella',
-    images: [
-      'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?auto=format&fit=crop&w=800&q=80',
-    ],
-    gender: 'female' as const,
-    distance: 2.4,
     breed: 'Golden Retriever',
-    bio: 'Loves to play fetch and go swimming. Very friendly with other dogs and children.',
-    owner: {
-      name: 'Sarah',
-      gender: 'female' as const,
-    },
-    likesCount: 23,
+    age: 2,
+    images: ['https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80'],
+    description: 'Friendly and energetic Golden Retriever who loves to play fetch and swim!',
+    personality: ['Friendly', 'Active', 'Playful'],
+    interests: ['Swimming', 'Fetch', 'Park Walks'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
   },
   {
     id: '2',
     name: 'Max',
-    images: [
-      'https://images.unsplash.com/photo-1560743641-3914f2c45636?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1521673461164-de300ebcfb17?auto=format&fit=crop&w=800&q=80',
-    ],
-    gender: 'male' as const,
-    distance: 4.1,
     breed: 'German Shepherd',
-    bio: 'Energetic and intelligent. Looking for friends to run and play with at the park.',
-    owner: {
-      name: 'Mike',
-      gender: 'male' as const,
-    },
-    likesCount: 18,
+    age: 3,
+    images: ['https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?auto=format&fit=crop&w=800&q=80'],
+    description: 'Intelligent and loyal German Shepherd looking for an active family.',
+    personality: ['Smart', 'Loyal', 'Protective'],
+    interests: ['Training', 'Agility', 'Hiking'],
+    distance: 5.8,
+    address: 'Burnaby, BC'
   },
   {
     id: '3',
     name: 'Luna',
-    images: [
-      'https://images.unsplash.com/photo-1511382686815-a9a670f0a512?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1554692918-08fa0fdc9db3?auto=format&fit=crop&w=800&q=80',
-    ],
-    gender: 'female' as const,
-    distance: 1.8,
-    breed: 'Poodle',
-    bio: 'Elegant and social. Enjoys long walks and playing with toys.',
-    owner: {
-      name: 'Emma',
-      gender: 'female' as const,
-    },
-    likesCount: 15,
+    breed: 'Husky',
+    age: 2,
+    images: ['https://images.unsplash.com/photo-1605568427561-40dd23c2acea?auto=format&fit=crop&w=800&q=80'],
+    description: 'Adventurous husky who loves winter activities and long runs.',
+    personality: ['Energetic', 'Independent', 'Talkative'],
+    interests: ['Running', 'Snow Activities', 'Adventure'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
   },
+  {
+    id: '4',
+    name: 'Charlie',
+    breed: 'French Bulldog',
+    age: 1,
+    images: ['https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80'],
+    description: 'Charming French Bulldog puppy who loves cuddles and short walks.',
+    personality: ['Affectionate', 'Calm', 'Friendly'],
+    interests: ['Cuddling', 'Short Walks', 'Napping'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
+  },
+  {
+    id: '5',
+    name: 'Milo',
+    breed: 'Poodle',
+    age: 4,
+    images: ['https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?auto=format&fit=crop&w=800&q=80'],
+    description: 'Intelligent and elegant poodle who enjoys learning new tricks.',
+    personality: ['Smart', 'Elegant', 'Gentle'],
+    interests: ['Training', 'Grooming', 'Dog Parks'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
+  },
+  {
+    id: '6',
+    name: 'Bailey',
+    breed: 'Labrador Retriever',
+    age: 3,
+    images: ['https://images.unsplash.com/photo-1591160690555-5debfba289f0?auto=format&fit=crop&w=800&q=80'],
+    description: 'Friendly Lab who loves water and playing with other dogs.',
+    personality: ['Social', 'Playful', 'Water-loving'],
+    interests: ['Swimming', 'Fetch', 'Meeting New Dogs'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
+  },
+  {
+    id: '7',
+    name: 'Rocky',
+    breed: 'Rottweiler',
+    age: 5,
+    images: ['https://images.unsplash.com/photo-1567752881298-894bb81f9379?auto=format&fit=crop&w=800&q=80'],
+    description: 'Gentle giant with a heart of gold, great with families.',
+    personality: ['Gentle', 'Protective', 'Calm'],
+    interests: ['Family Time', 'Guard Duty', 'Relaxing'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
+  },
+  {
+    id: '8',
+    name: 'Daisy',
+    breed: 'Corgi',
+    age: 2,
+    images: ['https://images.unsplash.com/photo-1612536057832-2ff7ead58194?auto=format&fit=crop&w=800&q=80'],
+    description: 'Energetic Corgi who loves herding and playing games.',
+    personality: ['Energetic', 'Smart', 'Playful'],
+    interests: ['Herding', 'Agility', 'Treats'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
+  },
+  {
+    id: '9',
+    name: 'Leo',
+    breed: 'Bernese Mountain Dog',
+    age: 4,
+    images: ['https://images.unsplash.com/photo-1582456891925-a0fab0e8f3bf?auto=format&fit=crop&w=800&q=80'],
+    description: 'Big fluffy mountain dog who loves winter and cuddles.',
+    personality: ['Gentle', 'Patient', 'Loving'],
+    interests: ['Snow Play', 'Carrying Bags', 'Mountain Walks'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
+  },
+  {
+    id: '10',
+    name: 'Zoe',
+    breed: 'Border Collie',
+    age: 3,
+    images: ['https://images.unsplash.com/photo-1503256207526-0d5d80fa2f47?auto=format&fit=crop&w=800&q=80'],
+    description: 'Highly intelligent Border Collie who excels at agility.',
+    personality: ['Intelligent', 'Athletic', 'Focused'],
+    interests: ['Agility Training', 'Frisbee', 'Problem Solving'],
+    distance: 2.5,
+    address: 'Vancouver, BC'
+  }
 ];
 
 const Dating = () => {
@@ -170,29 +239,53 @@ const Dating = () => {
                     </div>
                     
                     <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="text-gray-600">Gender</div>
-                      <div className="font-medium">{petDetail.gender === 'male' ? 'Male' : 'Female'}</div>
+                      <div className="text-gray-600">Age</div>
+                      <div className="font-medium">{petDetail.age} years</div>
                     </div>
-                    
+
                     <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="text-gray-600">Distance</div>
-                      <div className="font-medium">{petDetail.distance} km away</div>
+                      <div className="text-gray-600">Location</div>
+                      <div className="font-medium flex items-center">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        {petDetail.address} • {petDetail.distance}km away
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Bio */}
+                {/* Description */}
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-2">Bio</h3>
-                  <p className="text-gray-700">{petDetail.bio}</p>
+                  <h3 className="text-lg font-semibold mb-2">Description</h3>
+                  <p className="text-gray-700">{petDetail.description}</p>
                 </div>
                 
-                {/* Owner Information */}
+                {/* Personality */}
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-2">My Parent</h3>
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="font-medium">{petDetail.owner.name}</div>
-                    <div className="text-gray-600">{petDetail.owner.gender === 'male' ? 'Male' : 'Female'}</div>
+                  <h3 className="text-lg font-semibold mb-2">Personality</h3>
+                  <div className="flex flex-wrap">
+                    {petDetail.personality.map((trait, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-2 py-1 bg-gray-200 text-sm rounded-full mr-2 mb-2"
+                      >
+                        {trait}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Interests */}
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold mb-2">Interests</h3>
+                  <div className="flex flex-wrap">
+                    {petDetail.interests.map((interest, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-2 py-1 bg-gray-200 text-sm rounded-full mr-2 mb-2"
+                      >
+                        {interest}
+                      </span>
+                    ))}
                   </div>
                 </div>
                 
