@@ -133,9 +133,11 @@ const Chat = () => {
   };
 
   const formatTime = (date: string | Date) => {
-    return new Intl.DateTimeFormat('ko-KR', {
+    return new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Vancouver',
       hour: 'numeric',
       minute: 'numeric',
+      hour12: true
     }).format(new Date(date));
   };
 
@@ -196,7 +198,7 @@ const Chat = () => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="메시지를 입력하세요..."
+            placeholder="Type a message..."
             className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:border-blue-500"
           />
           <button

@@ -1,41 +1,111 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import ProfileImage from '../components/ui/ProfileImage';
 import { useNavigate } from 'react-router-dom';
+import { getMessages } from '../lib/api';
 
-// Sample data
-const sampleConversations = [
-  {
-    id: '1',
-    petName: 'Bella',
-    ownerName: 'Sarah',
-    image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80',
-    lastMessage: "Let's meet at the park this weekend!",
-    time: '10:32 AM',
-    unread: 2,
-  },
-  {
-    id: '2',
-    petName: 'Max',
-    ownerName: 'Mike',
-    image: 'https://images.unsplash.com/photo-1560743641-3914f2c45636?auto=format&fit=crop&w=800&q=80',
-    lastMessage: 'My dog really enjoyed playing with yours! We should do it again.',
-    time: 'Yesterday',
-    unread: 0,
-  },
-  {
-    id: '3',
-    petName: 'Luna',
-    ownerName: 'Emma',
-    image: 'https://images.unsplash.com/photo-1511382686815-a9a670f0a512?auto=format&fit=crop&w=800&q=80',
-    lastMessage: 'Thanks for the recommendation on the vet!',
-    time: 'Wed',
-    unread: 0,
-  },
-];
+interface Conversation {
+  id: string;
+  petName: string;
+  ownerName: string;
+  image: string;
+  lastMessage: string;
+  time: string;
+  unread: number;
+}
+
+interface Message {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  text: string;
+  created_at: string;
+  read: boolean;
+}
+
+// Get userId from localStorage
+const getUserId = () => {
+  const storedUserId = localStorage.getItem('chatUserId');
+  if (storedUserId) {
+    return storedUserId;
+  }
+  const newUserId = 'user-' + Date.now();
+  localStorage.setItem('chatUserId', newUserId);
+  return newUserId;
+};
 
 const Messages = () => {
   const navigate = useNavigate();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [userId] = useState(getUserId());
+
+  // Format time function
+  const formatTime = (date: string) => {
+    const messageDate = new Date(date);
+    const now = new Date();
+    
+    // Convert to Pacific Time
+    const pacificFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Vancouver',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    });
+
+    const pacificDateFormatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Vancouver',
+      month: 'short',
+      day: 'numeric'
+    });
+
+    // Get Pacific Time versions of the dates
+    const pacificMessageDate = new Date(messageDate.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
+    const pacificNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
+
+    // Calculate the difference in hours in Pacific Time
+    const diffInHours = (pacificNow.getTime() - pacificMessageDate.getTime()) / (1000 * 60 * 60);
+
+    if (diffInHours < 24) {
+      return pacificFormatter.format(messageDate);
+    } else if (diffInHours < 48) {
+      return 'Yesterday';
+    } else {
+      return pacificDateFormatter.format(messageDate);
+    }
+  };
+
+  // Fetch messages for all conversations
+  useEffect(() => {
+    const fetchAllMessages = async () => {
+      try {
+        const conversationPromises = samplePets.map(async (pet) => {
+          const messages = await getMessages(userId, pet.id);
+          const lastMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+
+          return {
+            id: pet.id,
+            petName: pet.petName,
+            ownerName: pet.ownerName,
+            image: pet.image,
+            lastMessage: lastMessage ? lastMessage.text : "No messages yet",
+            time: lastMessage ? formatTime(lastMessage.created_at) : "",
+            unread: messages ? messages.filter(
+              (msg: Message) => msg.sender_id !== userId && !msg.read
+            ).length : 0,
+          };
+        });
+
+        const updatedConversations = await Promise.all(conversationPromises);
+        setConversations(updatedConversations);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchAllMessages();
+    const interval = setInterval(fetchAllMessages, 3000);
+    return () => clearInterval(interval);
+  }, [userId]);
 
   return (
     <div className="page-container">
@@ -54,7 +124,7 @@ const Messages = () => {
       </header>
       
       <div className="scrollable flex-1">
-        {sampleConversations.length === 0 ? (
+        {conversations.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-6 text-center">
             <div className="mb-4 text-6xl">💬</div>
             <h3 className="text-xl font-semibold mb-2">No messages yet</h3>
@@ -64,7 +134,7 @@ const Messages = () => {
           </div>
         ) : (
           <div className="p-4 space-y-1">
-            {sampleConversations.map((conversation) => (
+            {conversations.map((conversation) => (
               <div
                 key={conversation.id}
                 className="flex items-center p-3 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"

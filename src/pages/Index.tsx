@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeartHandshake, ArrowRight } from 'lucide-react';
@@ -28,7 +27,7 @@ const Index = () => {
           <div className="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center mb-6 shadow-lg">
             <HeartHandshake className="w-12 h-12 text-white" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">PetMeet</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">Lovey Dogey</h1>
           <p className="text-gray-600 text-center max-w-xs">Find the perfect playmate for your furry friend</p>
         </div>
         

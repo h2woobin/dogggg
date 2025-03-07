@@ -1,45 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// Sample data
-const initialPosts = [
-  {
-    id: '1',
-    title: 'How do I stop my dog from barking at strangers?',
-    content: "My 2-year-old Beagle barks excessively whenever someone new comes to our house. We've tried treats and distraction but nothing seems to work. Any advice from experienced owners?",
-    tags: ['training', 'behavior', 'barking'],
-    petType: 'Beagle',
-    likesCount: 24,
-    commentsCount: 7,
-    timeSince: '2h ago',
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: '2',
-    title: 'Best food for a German Shepherd with sensitive stomach?',
-    content: "My German Shepherd has developed some digestive issues and I'm looking for food recommendations. He's 4 years old and quite active.",
-    tags: ['nutrition', 'health', 'germanshepherd'],
-    petType: 'German Shepherd',
-    likesCount: 18,
-    commentsCount: 12,
-    timeSince: '5h ago',
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: '3',
-    title: 'Introducing a new puppy to my older dog',
-    content: "I'm getting a new Labrador puppy next week and I already have a 7-year-old Retriever at home. Any tips on how to make the introduction go smoothly and avoid jealousy?",
-    tags: ['puppies', 'multipledog', 'training'],
-    petType: 'Labrador',
-    likesCount: 32,
-    commentsCount: 15,
-    timeSince: '1d ago',
-    isLiked: false,
-    isBookmarked: false,
-  },
-];
-
 export interface Post {
   id: string;
   title: string;
@@ -66,7 +26,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // localStorage에서 데이터 불러오기 또는 초기 데이터 사용
   const [posts, setPosts] = useState<Post[]>(() => {
     const savedPosts = localStorage.getItem('posts');
-    return savedPosts ? JSON.parse(savedPosts) : initialPosts;
+    return savedPosts ? JSON.parse(savedPosts) : [];
   });
 
   const [likedPosts, setLikedPosts] = useState<string[]>(() => {
