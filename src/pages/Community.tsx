@@ -4,23 +4,36 @@ import { Search, Plus, TrendingUp, Clock, Filter } from 'lucide-react';
 import PostCard from '../components/ui/PostCard';
 import { usePost } from '../contexts/PostContext';
 
-export interface Post {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  petType: string;
-  likesCount: number;
-  commentsCount: number;
-  timeSince: string;
-  isLiked: boolean;
-  isBookmarked: boolean;
+function calculateTimeSince(date: Date): string {
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const hours = Math.floor(diff / 3600);
+  return `${hours}시간 전`;
 }
 
 const Community = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('trending');
   const { posts, toggleLike, toggleBookmark } = usePost();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredPosts = posts.filter(post => 
+    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.petType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    if (activeTab === 'recent') {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+    return b.likesCount - a.likesCount;
+  });
+
+  const displayPosts = activeTab === 'saved' 
+    ? sortedPosts.filter(post => post.isBookmarked)
+    : sortedPosts;
 
   return (
     <div className="page-container">
@@ -41,58 +54,42 @@ const Community = () => {
           </div>
           <input
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="bg-gray-100 border-none text-gray-900 text-sm rounded-xl block w-full pl-10 p-2.5 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Search topics, posts, and dog breeds..."
           />
         </div>
-        
-        <div className="flex border-b border-gray-200">
-          <button 
-            className={`flex items-center py-2 px-4 border-b-2 text-sm font-medium ${
-              activeTab === 'trending' 
-                ? 'border-blue-500 text-blue-600' 
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-            onClick={() => setActiveTab('trending')}
-          >
-            <TrendingUp className="w-4 h-4 mr-1" />
-            Trending
-          </button>
-          <button 
-            className={`flex items-center py-2 px-4 border-b-2 text-sm font-medium ${
-              activeTab === 'recent' 
-                ? 'border-blue-500 text-blue-600' 
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-            onClick={() => setActiveTab('recent')}
-          >
-            <Clock className="w-4 h-4 mr-1" />
-            Recent
-          </button>
-          <button 
-            className={`flex items-center py-2 px-4 border-b-2 text-sm font-medium ${
-              activeTab === 'saved' 
-                ? 'border-blue-500 text-blue-600' 
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-            onClick={() => setActiveTab('saved')}
-          >
-            <Filter className="w-4 h-4 mr-1" />
-            Filters
-          </button>
-        </div>
       </header>
-      
+
       <div className="scrollable flex-1 p-4">
-        {posts.map(post => (
-          <PostCard
-            key={post.id}
-            {...post}
-            onClick={() => navigate(`/post/${post.id}`)}
-            onLike={() => toggleLike(post.id)}
-            onBookmark={() => toggleBookmark(post.id)}
-          />
-        ))}
+        {displayPosts.length === 0 ? (
+          <div className="text-center text-gray-500 mt-8">
+            {searchTerm ? '검색 결과가 없습니다.' : '게시물이 없습니다.'}
+          </div>
+        ) : (
+          displayPosts.map(post => (
+            <PostCard
+              key={post.id}
+              id={post.id}
+              title={post.title}
+              content={post.content}
+              tags={post.tags}
+              petType={post.petType}
+              likesCount={post.likesCount}
+              commentsCount={post.commentsCount}
+              isLiked={post.isLiked}
+              isBookmarked={post.isBookmarked}
+              onLike={toggleLike}
+              onBookmark={toggleBookmark}
+              onComment={(id) => {
+                console.log("Navigating to:", `/community/post/${id}`); // ✅ 디버깅 추가
+                navigate(`/community/post/${id}`);  // ✅ 수정된 부분
+              }}
+              timeSince={calculateTimeSince(new Date(post.created_at))}
+            />
+          ))
+        )}
       </div>
     </div>
   );
